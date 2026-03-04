@@ -1,0 +1,27 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Python / Jupyter artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Data and Models (Keeps your Git from crashing)
+*.csv
+*.dat
+*.out
+*.tar
+*.gz
+*.h5
+*.pt
+*.pth
+*.pkl
+
+# OS generated files
+.DS_Store
+Thumbs.db
