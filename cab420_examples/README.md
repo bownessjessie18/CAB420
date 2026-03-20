@@ -1,0 +1,8 @@
+# CAB420 (Machine Learning) Examples
+
+This repository contains the code examples used for CAB420 (Machine Learning). Examples can be grouped into:
+
+*  *core* examples, which are numbered examples for each topic, and which contain the main concepts covered in the unit. Comments in these examples are quite detailed, with lots of explanation as to what's going on. If you find things that are unclear in here, please let me know so I can improve them.
+*  *additional* examples. Most of these have been used to generate additional content for slides and so are included for completeness, and are very much optional. Comments in here will be a bit sparser, though there's still some detail. If you're looking through these, I'm assuming that you've looked at the appropriate *core* content and have a good grasp of that.
+*  *bonus* examples, which extend the core content and are once again very much optional. These tend to go off the beaten path somewhat, and mostly exist because either at some point one or more people asked a question about something that led to the creation of an example; or because of gradual changes to unit content that has meant that some stuff has shifted from being a core example. Tthe assumption is very much that you're comfortable with whatever is in the *core* content. There will be fair bit of detail in these examples in terms of comments to explain what's going on, but examples in this category will gloss over things that are already covered well in the *core* examples and the comments will focus on the new and weird things that are the focus of the bonus example. You'll probably also find more typos in these examples, and certainly some sillier comments.
+
