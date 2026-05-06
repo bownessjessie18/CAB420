@@ -1,0 +1,48 @@
+For problem 1, your response should include sections that address the following:
+What pre-processing (i.e. resizing, colour conversion) you apply to the data and why. Note that you do not need to pre-process the data, in which case you should explain why you are using the data ‘as is’. For fair comparison, use the same pre-processing for both the methods (non-deep learning and deep-learning). (suggested length, 1/2 page excluding figures/tables)
+Details of the selected non-deep-learning approach(es) used, including justification for their selection; and of the deep-learning approaches used, including justification for their selection. Your justification should consider the nature of the problem, constraints imposed by the data, and computational considerations.
+(suggested length, 1 page excluding figures/tables)
+An evaluation that compares the two methods, reporting Top-1, Top-5 and Top-10 accuracy, and including CMC curves for the developed methods. Your evaluation should consider instances where performance differs between the two methods, and comment on the respective strengths and weaknesses (including computational efficiency/runtime) of the two approaches.
+(suggested length, 1 page excluding figures/tables)
+A brief discussion on ethical considerations regarding the development and deployment of re-identification techniques such as face and person re-identification. Research into such re-identification methods has enabled facial recognition for securing devices by Microsoft, Apple, and more1. There are also ethical considerations pertaining to re-identification with respect to how data for training these models is collected, and how some of these models may be used in applications including surveillance including where and for what purpose these models are deployed (consider the recent controversy regarding the use of face recognition within KMart and Bunnings). You are to briefly discuss the ethical concerns that need to be considered when developing and deploying person re-identification systems.
+This section will require additional research on your behalf, though to aid in starting discussing and investigating ethical considerations, we provide some references below as a starting point. Each of these sources may contain additional references which may also be useful. In this section, please briefly discuss ethical considerations pertaining to:
+How data is collected to train these models, and how consent for collecting this data is obtained;
+How these models may be used (ie. authentication for digital devices, surveillance etc.), and how people are notified of their use;
+Limitations of these models.
+You may use the provided resources (see list below) to form your investigation, though additional resources may be used (and is encouraged but not necessary). All sources must be cited correctly, using any well-defined referencing format.
+(suggested length, 1/2 page, excluding citations and any figures/tables).
+
+Suggested Resources 
+Duke University removing the Duke-MTMC person re-identification dataset [2] following concerns around it's use to train surveillance systems
+Investigations by [3] and [4] into how various public surveillance datasets (including Duke-MTMC) are collected and used without express consent of individuals in the data
+A paper proposing a method for anonymous tracking and person re-identification: “REVAMP 2 T: real-time edge video analytics for multi-camera privacy-aware pedestrian tracking” [5]
+Given person re-identification is often used in video surveillance, it is worth considering some recent reviews of video surveillance with new legislation in different parts of the world [6].
+Amazon, Microsoft and IBM have been urged to stop selling facial recognition (enabling person re-identification) to law enforcement due to limitations in the systems and how they were being used [7].
+KMart [8] and Bunnings [9] were both found to have breached privacy laws in their deployment of facial recognition within their store
+
+
+Pre-processing:
+- the data were kept as it and no grayscale conversion or extreme resizing was applied
+    - this was omited because in person re-id, color is one of the critical disctriminative features. Converting to grayscale would destroy this information. Similarly, the image are quite small already (168 x 64) 
+        resizing them would further destroy the spatial pattern that deep learning relies on.
+- Both non DL and DL were given the same original pixel data. However, the images had to be reshaped (flattened into 1D vectors) for PCA to mathematically process them, the underlying raw pixel values are still   the same. 
+
+Details of non-deep learning and deep-learning: 
+The person re id task is an open set retrieval problem.
+    Non-Learning Approach (PCA + 1)
+        - Principle Component Analysis was used to reduce the 24,576 raw pixel dimensions down to the components that explain 95% of the variance. A 1 Nearest Neighbour approach with (L2) distance to rank the 
+            matches was then used to 
+        - The PCA model was instaniated with n_componnents = 0.95. This parameter mathematically ensures that the model retains the top principle components responsible for 95% of the variance in the dataset. 
+        - By setting the PCA to retain 95% of the variance, the algorithm successfully compressed the feature space from 24,576 raw pixel dimensions down to just 717 principal components. This represents a roughly           97% reduction in data size per image, significantly accelerating the 1-Nearest Neighbor distance calculations while preserving the vast majority of the discriminative visual information
+        - With the gallery and probe set sucessfuly transformed onto the new PCA space, a nearest neighbour matching as applied.
+            - For every single image in the probe set, the algorithm calculates the L2 (Euclidean) distance between its PCA vectors and the PCA vectors of every image in the Gallery database. Since PCA grouped 
+                visually similar images closer together in its mathematical space, a smaller L2 distance indicates a higher likelihood of a match. The algorthm then sorted these distances in ascending order to
+                to create a ranked list of predictions
+        - The ranked list were aggregated via a Cumulitive Match Characteristic Curve which evaluates the probability that the true matching identity appears within the top N nearest neighbours. 
+        - STREGTH, WEAKNESSES AND COMPUTATIONAL CONSIDERATIONS:
+            - Strength: This approach was the least computationally intensive. Training the PCA subspace requires no GPU acceleration, and took merely a few seconds to compute, which makes it highly scalable for 
+                        larger datasets. 
+            - weaknesses: Whilt it is computationally efficient, PCA is severly limited by the constraints of the data. PCA is not shift-invariant. It evaluates the variance strictly based on the fixed pixel 
+                        coordinates. If a person stands in a shadow, or turns around to reveal a backpack, the raw pixel intensities change drastically. PCA interprets these spatial changes as entirely different                           identities because it lacks the ability to understand semantic, high-level human features.
+    Deep Learning Approach (Triplet Loss):
+        - While PCA provided a mathematically stable baseline, its reliance on raw pixel variance makes it highly vulnerable to changes in background, lighting, and body positions. To address this, a deep learnning approached was used. Because the context is an open set retrieval problem, standard classification network cannot be used. 
